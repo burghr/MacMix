@@ -26,7 +26,7 @@
 #
 # Don't let the length of this script scare you away from building/installing without it (using
 # either Xcode or xcodebuild). 90% of this code is for error handling, logging, user friendliness,
-# etc. See MANUAL-INSTALL.md, DEVELOPING.md and BGMDriver/BGMDriver/quick_install.sh.
+# etc. See BGMDriver/BGMDriver/quick_install.sh.
 #
 
 # Safe mode
@@ -63,7 +63,7 @@ error_handler() {
          "first to check that it doesn't include any personal information. It shouldn't, but this" \
          "is alpha software so you never know." >&2
     echo >&2
-    echo "To try building and installing without this build script, see MANUAL-INSTALL.md." >&2
+    echo "To build/install manually, see the Development section of README.md." >&2
     echo >&2
     echo "You can also try ignoring compiler warnings with: $0 -w" >&2
 

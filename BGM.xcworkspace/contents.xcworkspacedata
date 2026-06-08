@@ -11,21 +11,6 @@
       location = "group:README.md">
    </FileRef>
    <FileRef
-      location = "group:MANUAL-INSTALL.md">
-   </FileRef>
-   <FileRef
-      location = "group:MANUAL-UNINSTALL.md">
-   </FileRef>
-   <FileRef
-      location = "group:TODO.md">
-   </FileRef>
-   <FileRef
-      location = "group:DEVELOPING.md">
-   </FileRef>
-   <FileRef
-      location = "group:CONTRIBUTING.md">
-   </FileRef>
-   <FileRef
       location = "group:LICENSE">
    </FileRef>
    <FileRef
