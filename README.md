@@ -1,241 +1,222 @@
-<!-- vim: set tw=120: -->
+# MacMixer
 
-![](Images/README/FermataIcon.png)
+A menu bar **volume mixer** for macOS: a master volume slider, an output-device
+picker, and a per-app volume slider for every running app — in a clean,
+native SwiftUI popover.
 
-# Background Music
-##### macOS audio utility
+> **MacMixer is a fork of [Background Music](https://github.com/kyleneideck/BackgroundMusic)
+> by Kyle Neideck and contributors.** It reuses Background Music's audio engine
+> and virtual audio driver wholesale, and replaces the original AppKit menu UI
+> with a SwiftUI menu bar popover. All the hard audio work — the virtual device,
+> per-app stream capture, and glitch-free playthrough — is theirs. Huge thanks
+> to that project.
 
-<img src="Images/README/Screenshot.png" width="340" height="443" />
+## Why a fork?
 
-[Overview](#overview)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Auto-pause music](#auto-pause-music)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Application volume](#application-volume)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Recording system audio](#recording-system-audio)<br/>
-[Download](#download)<br/>
-[Run / Configure](#run--configure)<br/>
-[Build and Install](#installing-from-source-code)</br>
-[Uninstall](#uninstall)<br/>
-[Troubleshooting](#troubleshooting)<br/>
-[Related Projects](#related-projects)<br/>
-[License](#license)<br/>
+Background Music is a powerful, general-purpose audio utility — it auto-pauses
+your music player when other audio starts, integrates with Spotify/Music/VLC/etc.,
+exposes an AppleScript interface, routes system sounds separately, and can record
+system audio. That's a lot of surface area, and its UI is a dense AppKit status-bar
+menu built around all of it.
 
-# Overview
+MacMixer wants to do **one thing well: be a simple per-app volume mixer that lives
+in the menu bar.** So this fork keeps the part of Background Music that's genuinely
+hard and valuable, and drops everything else:
 
-+ Automatically pause/unpause your music player when other audio sources are playing/stopped
-+ Per-application volume control
-+ Record system audio
-+ No restart required to install
+**Kept (unchanged):** the virtual audio driver and the audio engine — capturing
+each app's audio, applying per-app gain, and playing it back glitch-free. This is
+the difficult code, and there's no reason to reinvent it.
 
-##### *Note: Background Music is still in alpha.*
+**Replaced:** the AppKit status-bar menu → a clean, native **SwiftUI popover**:
+an output-device picker at the top, a master slider, and one slider per running
+app. That's the whole interface.
 
-## Auto-pause music
+**Dropped (not needed for a volume mixer):**
+- **Auto-pause music** and all the music-player integrations (Spotify, Music,
+  iTunes, VLC, Swinsian, …)
+- The **AppleScript** scripting interface
+- The **About / Preferences** panels and the separate system-sounds slider
 
-**Background Music** automatically pauses your music player when a second audio source is playing and unpauses the player when the second source has stopped.
+**Added on top:** a per-app **boost** control with a clear indicator above 100%,
+the ability to **hide apps** you never adjust (with sensible defaults like Finder
+and Terminal pre-hidden), and **automatic sample-rate re-sync** so audio keeps
+working when a Bluetooth headset (e.g. AirPods) switches into call mode.
 
-The auto-pause feature currently supports following music players:
+The result is a smaller, more focused app: open the menu, see your apps, drag a
+slider. No configuration, no music-player babysitting, no clutter.
 
-+ [iTunes](https://www.apple.com/itunes/)
-+ [Spotify](https://www.spotify.com)
-+ [VLC](https://www.videolan.org/vlc/)
-+ [VOX](https://vox.rocks/mac-music-player)
-+ [Decibel](https://sbooth.org/Decibel/)
-+ [Hermes](http://hermesapp.org/)
-+ [Swinsian](https://swinsian.com/)
-+ [GPMDP](https://www.googleplaymusicdesktopplayer.com/)
+## How it works
 
-Adding support for a new music player is usually straightforward.<sup id="a1">[1](#f1)</sup> If you don't know how to program, or just don't feel
-like it, feel free to [create an issue](https://github.com/kyleneideck/BackgroundMusic/issues/new). Otherwise, see
-[BGMMusicPlayer.h](BGMApp/BGMApp/Music%20Players/BGMMusicPlayer.h).
+macOS has no public API for per-application output volume. Background Music
+solves this with a virtual audio device (a HAL plugin) that becomes the system
+default output, captures each app's audio (tagged by process), applies per-app
+gain, and plays the mix back through your real output device. MacMixer keeps
+that engine and driver unchanged and talks to it through a thin Objective-C++
+bridge (`MixerEngine`), driving everything from a SwiftUI front end.
 
-## Application volume
-
-**Background Music** provides a volume slider for each application running your system. You can boost quiet applications above their maximum volume.
-
-## Recording system audio
-
-You can record system audio with **Background Music**. With **Background Music** running, launch **QuickTime Player** and select **File > New Audio Recording** (or **New Screen Recording**, **New Movie Recording**). Then click the dropdown menu (`⌄`) next to the record button and select **Background Music** as the input device.
-
-You can record system audio and a microphone together by creating an [aggregate
-device](https://support.apple.com/en-us/HT202000) that combines your input device (usually Built-in Input) with
-the **Background Music** device. You can create the aggregate device using the **Audio MIDI Setup** utility under
-***/Applications/Utilities***.
-
-# Download
-
-**Requires macOS 10.13+**.
-
-You can download the current version of **Background Music** using the following options. We also have [snapshot builds](https://github.com/kyleneideck/BackgroundMusic/releases).
-
-### Option 1
-
-Download **version 0.4.3**:
-
-<a href="https://github.com/kyleneideck/BackgroundMusic/releases/download/v0.4.3/BackgroundMusic-0.4.3.pkg"><img
-src="Images/README/pkg-icon.png" width="32" height="32" align="absmiddle" />
-BackgroundMusic-0.4.3.pkg</a> (771 KB)
-
-> <sub>MD5: 8c3bfe26c9cdf27365b9843f719ef188</sub><br/>
-> <sub>SHA256: c1c48a37c83af44ce50bee68879856c96b2f6c97360ce461b1c7d653515be7fd</sub><br/>
-> <sub>PGP:
-> [sig](https://github.com/kyleneideck/BackgroundMusic/releases/download/v0.4.3/BackgroundMusic-0.4.3.pkg.asc),
-> [key (0595DF814E41A6F69334C5E2CAA8D9B8E39EC18C)](https://bearisdriving.com/kyle-neideck.gpg)</sub>
-
-### Option 2
-
-Install using [Homebrew](https://brew.sh/) by running the following command in **Terminal**:
-
-```bash
-brew install --cask background-music
+```
+Your apps ─audio─▶ Background Music Device (virtual, captures + per-app gain)
+                          │
+                          ▼
+                   MacMixer.app (playthrough + SwiftUI mixer UI)
+                          │
+                          ▼
+                   Your real output device
 ```
 
-# Run / Configure
+## Layout of the fork
 
-Just run `Applications > Background Music.app`! **Background Music** sets itself as your default output device under
-`System Settings > Sound` when it starts up (and sets it back on Quit).
+| Path | Role |
+|---|---|
+| `BGMDriver/` | The virtual audio driver — **unchanged** from Background Music |
+| `BGMApp/BGMApp/MacMixer/` | New MacMixer SwiftUI front end + the `MixerEngine` bridge |
+| `BGMApp/BGMApp/BGM*` | Background Music's audio core (device manager, playthrough, …) — kept; the old AppKit UI classes are left in but unused |
+| `build_and_install.sh` / `uninstall.sh` | Background Music's installer, re-pointed at `MacMixer.app` |
 
-### Launch at Startup (Optional)
+The new front end:
 
-Add **Background Music** to `System Settings > General > Login Items`.
+- `MixerEngine.{h,mm}` — Swift-facing facade over `BGMAudioDeviceManager` /
+  `BGMBackgroundMusicDevice`: start/stop, output devices, master volume,
+  per-app volume.
+- `MacMixerApp.swift`, `AppDelegate.swift` — menu bar status item + transient
+  `NSPopover` (LSUIElement, no dock icon).
+- `MixerModel.swift` — `ObservableObject` bridging the engine to SwiftUI.
+- `PopupView.swift` — output picker, master slider, per-app sliders.
 
-# Installing from Source Code
+## Build & install
 
-**Background Music** usually takes less than a minute to build. You need [Xcode](https://developer.apple.com/xcode/download/) version
-10 or higher.
+> Installs a system audio driver, so it needs your admin password and (on
+> recent macOS) approval in **System Settings → Privacy & Security**. It also
+> requests **Microphone** permission — the engine routes audio through a virtual
+> input device.
 
-### Option 1
-
-1. Open **Terminal**.
-2. Copy and paste the following command into **Terminal**:
-
-```shell
-(set -eo pipefail; URL='https://github.com/kyleneideck/BackgroundMusic/archive/master.tar.gz'; \
-    cd $(mktemp -d); echo Downloading $URL to $(pwd); curl -qfL# $URL | gzcat - | tar x && \
-    /bin/bash BackgroundMusic-master/build_and_install.sh -w && rm -rf BackgroundMusic-master)
+```
+bash build_and_install.sh
 ```
 
-<details><summary>More info...</summary>
+This builds the driver, the XPC helper, and `MacMixer.app`, installs them, and
+restarts `coreaudiod`. After it finishes, grant Microphone permission to
+MacMixer when prompted (or in System Settings) and relaunch it.
 
-This command uses `/bin/bash` instead of `bash` in case someone has a nonstandard Bash in their `$PATH`. However, it doesn't do this for `tar` or `curl`. In addition, `build_and_install.sh` doesn't call programs by absolute paths. This command also uses `gzcat - | tar x` instead of `tar xz` because `gzcat` will also check the file's integrity (gzip files
-include a checksum), and will ensure that a half-downloaded copy of `build_and_install.sh` doesn't run.
+**If MacMixer says it can't find the audio device** (or there's no "Background
+Music" device in Sound settings), the installer's `coreaudiod` restart didn't
+take — common on recent macOS. Restart it manually, then relaunch MacMixer:
 
-</details>
+```
+sudo killall coreaudiod
+```
 
-### Option 2
+## Uninstall
 
-1. Clone or [download](https://github.com/kyleneideck/BackgroundMusic/archive/master.zip) the project.
-2. If the project is in a zip, unzip it.
-3. Open **Terminal** and [change the directory](https://github.com/0nn0/terminal-mac-cheatsheet#core-commands) to the
-   directory containing the project.
-4. Run: `/bin/bash build_and_install.sh`.
+```
+bash uninstall.sh
+```
 
-The script restarts the system audio process (coreaudiod) at the end of the installation, so pause any applications
-playing audio if you can.
+## Notes
 
-To manually build and install, see [MANUAL_INSTALL.md](https://github.com/kyleneideck/BackgroundMusic/blob/master/MANUAL-INSTALL.md).
+- **Internal bundle identifiers are still `com.bearisdriving.BGM.*`.** The
+  driver and XPC helper trust each other by these IDs, so the fork keeps them to
+  avoid breaking the handshake. Only the user-facing app (name, menu bar title)
+  is rebranded to MacMixer. This means MacMixer and the real Background Music app
+  can't be installed at the same time.
+- Per-app sliders list all regular running apps; volume defaults to 100%.
 
-# Uninstall
+## Development & maintenance
 
-To uninstall **Background Music** from your system, follow these steps:
+Everything MacMixer-specific lives in **`BGMApp/BGMApp/MacMixer/`**. The rest of
+the tree is Background Music, mostly untouched.
 
-1. Open **Terminal**.
-2. To locate `uninstall.sh`, run: `cd /Applications/Background\ Music.app/Contents/Resources/`.
-3. Run: `bash uninstall.sh`.
+### The seam
 
-If you cannot locate `uninstall.sh`, you can [download the project](https://github.com/kyleneideck/BackgroundMusic/archive/master.zip) again.
+The SwiftUI UI never touches C++/CoreAudio directly. It goes through one
+Objective-C++ facade:
 
-To manually uninstall, see [MANUAL_UNINSTALL.md](https://github.com/kyleneideck/BackgroundMusic/blob/master/MANUAL-UNINSTALL.md).
+```
+SwiftUI (MixerModel)  →  MixerEngine (ObjC++)  →  BGMAudioDeviceManager / BGMBackgroundMusicDevice  →  BGMDriver
+```
 
-# Troubleshooting
+- **`MixerEngine.{h,mm}`** — the only file that calls BGM's C++. Add new audio
+  capabilities here and expose them as plain ObjC methods so Swift can call them.
+  - per-app volume → `BGMBackgroundMusicDevice::SetAppVolume / GetAppVolumes`
+    (the `kAudioDeviceCustomPropertyAppVolumes` `'apvs'` property, range 0–100)
+  - master volume/mute → `Get/SetVolumeControlScalarValue` / `…MuteControlValue`
+    on the BGM device (`kScope` = output, `kMasterChannel` from `BGM_Types.h`)
+  - output devices → `CAHALAudioSystemObject`
+  - startup → create `BGMAudioDeviceManager`, pick a real output device,
+    `setBGMDeviceAsOSDefault`, then create **`BGMXPCListener`** (required — without
+    it the driver's `StartIO` never reaches us and playthrough won't start)
+  - it also installs a `kAudioDevicePropertyNominalSampleRate` listener on the
+    output device and calls `[manager resyncSampleRate]` on change (fixes Bluetooth
+    call-mode slow-mo)
+  - pin Swift names with `NS_SWIFT_NAME(...)` when a selector imports ambiguously
+- **`MixerModel.swift`** — `@MainActor ObservableObject`. Lists running apps,
+  polls every 2 s. Note: the per-app slider is the source of truth — `refreshApps`
+  preserves on-screen values and only queries the engine for newly-seen apps.
+- **`PopupView.swift` / `AppDelegate.swift` / `MacMixerApp.swift`** — the menu bar
+  status item, transient `NSPopover`, and the popover layout.
+- Two small edits in BGM core: `-[BGMAudioDeviceManager resyncSampleRate]` (+ its
+  header decl).
 
-If Background Music crashes and your audio stops working, open `System Settings > Sound` and change your
-system's default output device to something other than the **Background Music device**. If it already is, then
-change the default device and then change it back again.
+### Build
 
-Make sure you allow "microphone access" when you first run Background Music. If you denied it, go to
-`System Settings > Security & Privacy > Privacy > Microphone`, find Background Music in the list
-and check the box next to it. Background Music doesn't actually listen to your microphone. It needs
-the permission because it gets your system audio from its virtual input device, which macOS counts
-as a microphone. (We're working on it in [#177](/../../issues/177).)
+```
+xcodebuild -project BGMApp/BGMApp.xcodeproj -scheme "Background Music" \
+  -configuration Release -derivedDataPath .build-rel \
+  CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="-" build
+```
 
-If the volume slider for an app isn't working, try looking in `More Apps` for entries like `Some
-App (Helper)`. For some meeting or video chat apps, you may need to do this to change the current
-meeting volume.
+The scheme is still named **"Background Music"**; the product is **`MacMixer.app`**.
 
-## Known issues and solutions
+### Redeploy after a code change (no full reinstall)
 
-- **Setting an application's volume above 50% can cause [clipping](https://en.wikipedia.org/wiki/Clipping_(audio)).**
+The driver and XPC helper are already installed, so you only need to replace the
+app — no `sudo`, no `coreaudiod` restart:
 
-    - Set your volume to its maximum level and lower the volumes of other applications.
+```
+NEW=.build-rel/Build/Products/Release/MacMixer.app
+codesign --force --deep --sign - "$NEW"
+killall MacMixer 2>/dev/null
+rm -rf /Applications/MacMixer.app && cp -R "$NEW" /Applications/MacMixer.app
+open -a MacMixer
+```
 
-- **Only 2-channel (stereo) audio devices are currently supported for output.**
+(Re-running `build_and_install.sh` is only needed when you change the **driver** or
+**XPC helper**.)
 
-- **VLC pauses iTunes or Spotify when playing, and stops Background Music from unpausing your music afterward.**
+### Xcode project gotchas (in `BGMApp.xcodeproj`)
 
-    - Under VLC's preferences, select **Show All**. Navigate to **Interface > Main interfaces > macosx** and change *Control external music players* to either *Do nothing* or *Pause and resume iTunes/Spotify*.
+The app target was an Objective-C XIB app; making it a SwiftUI app required:
 
-- **Skype pauses iTunes during calls.**
+- `main.m` + `MainMenu.xib` removed from the target; `NSMainNibFile` removed from
+  `Info.plist`. (BGM's other ObjC UI classes are left in the target, unused.)
+- App-target build settings added to all 3 configs (Debug/Release/DebugOpt):
+  `SWIFT_VERSION=5.0`, `SWIFT_OBJC_BRIDGING_HEADER` (→ `MacMixer-Bridging-Header.h`),
+  `ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=YES`, `PRODUCT_NAME=MacMixer`,
+  `MACOSX_DEPLOYMENT_TARGET=12.0` (SwiftUI App lifecycle needs 11; `.foregroundStyle`
+  needs 12), and `GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS=NO` (the 12.0 bump makes BGM's
+  `kAudioObjectPropertyElementMaster` trip `-Werror`).
+- MacMixer's file/build references in the pbxproj use IDs prefixed `FACADE…` so
+  they're easy to find.
 
-    - To disable this, uncheck *Pause iTunes during calls* on the **General** tab of **Skype**'s preferences.
+### Useful checks
 
-- **Plugging in or unplugging headphones when Background Music isn't running causes silence in the system audio.**
-    - Navigate to **System Settings > Sound**. Click the **Output** tab and change your default output device to something other than the **Background Music** device. Alternatively, press **Option + Click** on the sound icon within the menu bar to select a different output device. This happens when macOS remembers that the **Background Music** device was your default audio device the last time you used (or didn't use) headphones.
+```
+pgrep -lf MacMixer                                   # is it running?
+system_profiler SPAudioDataType | grep -i background # is the driver loaded?
+# which device is the system default output (should be "Background Music"):
+system_profiler SPAudioDataType | awk '/^ {8}[A-Za-z].*:$/{n=$0} /Default Output Device: Yes/{print n}'
+log show --last 10m --predicate 'process == "MacMixer"' --style compact
+```
 
-- **[A Chrome bug](https://bugs.chromium.org/p/chromium/issues/detail?id=557620) stops Chrome from switching to the Background Music device after you open Background Music.**
-    - Chrome's audio will still play, but **Background Music** won't be aware of it.
+### Known open items
 
-- **Some applications play notification sounds that are only just long enough to trigger an auto-pause.**
-    - Increase the `kPauseDelayNSec` constant in [BGMAutoPauseMusic.mm](/BGMApp/BGMApp/BGMAutoPauseMusic.mm). It will increase your music's overlap time over other audio, so don't increase it too much. See [#5](https://github.com/kyleneideck/BackgroundMusic/issues/5) for details.
-
-Many other issues are listed in [TODO.md](/TODO.md) and in [GitHub
-Issues](https://github.com/kyleneideck/BackgroundMusic/issues).
-
-# Related projects
-
-- [Core Audio User-Space Driver
-  Examples](https://developer.apple.com/library/mac/samplecode/AudioDriverExamples/Introduction/Intro.html)
-  The sample code from Apple that BGMDriver is based on.
-- [Soundflower](https://github.com/mattingalls/Soundflower) - "MacOS system extension that allows applications to pass
-  audio to other applications."
-- [WavTap](https://github.com/pje/WavTap) - "globally capture whatever your mac is playing—-as simply as a screenshot"
-- [eqMac](http://www.bitgapp.com/eqmac/), [GitHub](https://github.com/nodeful/eqMac2) - "System-wide Audio Equalizer for the Mac"
-- [llaudio](https://github.com/mountainstorm/llaudio) - "An old piece of work to reverse engineer the Mac OSX
-  user/kernel audio interface. Shows how to read audio straight out of the kernel as you would on Darwin (where most the
-  OSX goodness is missing)"
-- [mute.fm](http://www.mutefm.com), [GitHub](https://github.com/jaredsohn/mutefm) (Windows) - Auto-pause music
-- [Jack OS X](http://www.jackosx.com) - "A Jack audio connection kit implementation for Mac OS X"
-- [PulseAudio OS X](https://github.com/zonque/PulseAudioOSX) - "PulseAudio for Mac OS X"
-- [Sound Pusher](https://github.com/q-p/SoundPusher) - "Virtual audio device, real-time encoder and SPDIF forwarder for
-  Mac OS X"
-- [Zirkonium](https://code.google.com/archive/p/zirkonium) - "An infrastructure and application for multi-channel sound
-  spatialization on MacOS X."
-- [BlackHole](https://github.com/ExistentialAudio/BlackHole) - "a modern macOS virtual audio driver that allows applications to pass audio to other applications with zero additional latency."
-
-### Non-free
-
-- [Audio Hijack](https://rogueamoeba.com/audiohijack/), [SoundSource](https://rogueamoeba.com/soundsource/) - "Capture
-  Audio From Anywhere on Your Mac", "Get truly powerful control over all the audio on your Mac!"
-- [Sound Siphon](https://staticz.com/soundsiphon/), [Sound Control](https://staticz.com/soundcontrol/) - System/app audio recording, per-app volumes, system audio equaliser
-- [SoundBunny](https://www.prosofteng.com/soundbunny-mac-volume-control/) - "Control application volume independently."
-- [Boom 2](https://www.globaldelight.com/boom/) - "The Best Volume Booster & Equalizer For Mac"
+- Startup picks whatever the current system default output is; it doesn't yet
+  remember the user's chosen device.
+- No login auto-start LaunchAgent.
+- The per-app list shows all regular running apps, not only ones playing audio.
 
 ## License
 
-Copyright © 2016-2024 [Background Music contributors](https://github.com/kyleneideck/BackgroundMusic/graphs/contributors).
-Licensed under [GPLv2](https://www.gnu.org/licenses/gpl-2.0.html), or any later version.
-
-**Background Music** includes code from:
-
-- [Core Audio User-Space Driver
-  Examples](https://developer.apple.com/library/mac/samplecode/AudioDriverExamples/Introduction/Intro.html), [original
-  license](LICENSE-Apple-Sample-Code), Copyright (C) 2013 Apple Inc. All Rights Reserved.
-- [Core Audio Utility
-  Classes](https://developer.apple.com/library/content/samplecode/CoreAudioUtilityClasses/Introduction/Intro.html),
-  [original license](LICENSE-Apple-Sample-Code), Copyright (C) 2014 Apple Inc. All Rights Reserved.
-
-----
-
-<b id="f1">[1]</b> However, if the music player doesn't support AppleScript, or doesn't support the events Background
-Music needs (`isPlaying`, `isPaused`, `play` and `pause`), it can take significantly more effort to add. (And in some
-cases would require changes to the music player itself.) [↩](#a1)
-
-
+GPLv2 (or later), inherited from Background Music. See `LICENSE`. Background
+Music is Copyright © Kyle Neideck and contributors; MacMixer's modifications are
+likewise GPLv2.

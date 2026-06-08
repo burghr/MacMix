@@ -34,8 +34,6 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2016-2024 Background Music contributors</string>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>The &quot;Background Music&quot; virtual audio device sends system audio to Background Music (the app) through a virtual input device.</string>
 	<key>NSPrincipalClass</key>

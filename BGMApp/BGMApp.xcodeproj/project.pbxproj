@@ -102,6 +102,12 @@
 		1CACCF3B1F334450007F86CA /* BGMBackgroundMusicDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CACCF371F3175AD007F86CA /* BGMBackgroundMusicDevice.cpp */; };
 		1CB8B33D1BBA75EF000E2DD1 /* BGMAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8B33C1BBA75EF000E2DD1 /* BGMAppDelegate.mm */; settings = {COMPILER_FLAGS = "-frandom-seed=BGMApp-BGMAppDelegate.mm"; }; };
 		1CB8B33F1BBA75EF000E2DD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8B33E1BBA75EF000E2DD1 /* main.m */; settings = {COMPILER_FLAGS = "-frandom-seed=BGMApp-main.m"; }; };
+		FACADE000000000000000101 /* MixerEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = FACADE000000000000000001 /* MixerEngine.mm */; };
+		FACADE000000000000000104 /* MacMixerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACADE000000000000000004 /* MacMixerApp.swift */; };
+		FACADE000000000000000105 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACADE000000000000000005 /* AppDelegate.swift */; };
+		FACADE000000000000000106 /* MixerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACADE000000000000000006 /* MixerModel.swift */; };
+		FACADE000000000000000107 /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACADE000000000000000007 /* PopupView.swift */; };
+		FACADE000000000000000108 /* VibrancyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACADE000000000000000008 /* VibrancyView.swift */; };
 		1CC1DF811BE5068A00FB8FE4 /* CACFArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CC1DF7D1BE5068A00FB8FE4 /* CACFArray.cpp */; settings = {COMPILER_FLAGS = "-frandom-seed=BGMApp-CACFArray.cpp"; }; };
 		1CC1DF821BE5068A00FB8FE4 /* CACFDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CC1DF7F1BE5068A00FB8FE4 /* CACFDictionary.cpp */; settings = {COMPILER_FLAGS = "-frandom-seed=BGMApp-CACFDictionary.cpp"; }; };
 		1CC1DF911BE5891300FB8FE4 /* CADebugger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CC1DF8F1BE5891300FB8FE4 /* CADebugger.cpp */; settings = {COMPILER_FLAGS = "-frandom-seed=BGMApp-CADebugger.cpp"; }; };
@@ -355,6 +361,14 @@
 		1CB8B33B1BBA75EF000E2DD1 /* BGMAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGMAppDelegate.h; sourceTree = "<group>"; };
 		1CB8B33C1BBA75EF000E2DD1 /* BGMAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BGMAppDelegate.mm; sourceTree = "<group>"; };
 		1CB8B33E1BBA75EF000E2DD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		FACADE000000000000000001 /* MixerEngine.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = MixerEngine.mm; path = BGMApp/MacMixer/MixerEngine.mm; sourceTree = SOURCE_ROOT; };
+		FACADE000000000000000002 /* MixerEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MixerEngine.h; path = BGMApp/MacMixer/MixerEngine.h; sourceTree = SOURCE_ROOT; };
+		FACADE000000000000000003 /* MacMixer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MacMixer-Bridging-Header.h"; path = "BGMApp/MacMixer/MacMixer-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
+		FACADE000000000000000004 /* MacMixerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MacMixerApp.swift; path = BGMApp/MacMixer/MacMixerApp.swift; sourceTree = SOURCE_ROOT; };
+		FACADE000000000000000005 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BGMApp/MacMixer/AppDelegate.swift; sourceTree = SOURCE_ROOT; };
+		FACADE000000000000000006 /* MixerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MixerModel.swift; path = BGMApp/MacMixer/MixerModel.swift; sourceTree = SOURCE_ROOT; };
+		FACADE000000000000000007 /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PopupView.swift; path = BGMApp/MacMixer/PopupView.swift; sourceTree = SOURCE_ROOT; };
+		FACADE000000000000000008 /* VibrancyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VibrancyView.swift; path = BGMApp/MacMixer/VibrancyView.swift; sourceTree = SOURCE_ROOT; };
 		1CB8B3431BBA75EF000E2DD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		1CC1DF7D1BE5068A00FB8FE4 /* CACFArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CACFArray.cpp; path = PublicUtility/CACFArray.cpp; sourceTree = "<group>"; };
 		1CC1DF7E1BE5068A00FB8FE4 /* CACFArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CACFArray.h; path = PublicUtility/CACFArray.h; sourceTree = "<group>"; };
@@ -1016,7 +1030,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				274827951E11052500B31D8D /* MainMenu.xib in Resources */,
 				1C533C7A1EED28B700270802 /* uninstall.sh in Resources */,
 				1C8D830E2042F25C00A838F2 /* GooglePlayMusicDesktopPlayer.js in Resources */,
 				1C533C801EF532CA00270802 /* _uninstall-non-interactive.sh in Resources */,
@@ -1142,7 +1155,12 @@
 				1C1963091BCAF677008A4DF7 /* CAHostTimeBase.cpp in Sources */,
 				1C2FC3141EC706E000A76592 /* BGMAppDelegate+AppleScript.mm in Sources */,
 				1C2FC31B1EC7238A00A76592 /* BGMASOutputDevice.mm in Sources */,
-				1CB8B33F1BBA75EF000E2DD1 /* main.m in Sources */,
+				FACADE000000000000000101 /* MixerEngine.mm in Sources */,
+				FACADE000000000000000104 /* MacMixerApp.swift in Sources */,
+				FACADE000000000000000105 /* AppDelegate.swift in Sources */,
+				FACADE000000000000000106 /* MixerModel.swift in Sources */,
+				FACADE000000000000000107 /* PopupView.swift in Sources */,
+				FACADE000000000000000108 /* VibrancyView.swift in Sources */,
 				1CB8B33D1BBA75EF000E2DD1 /* BGMAppDelegate.mm in Sources */,
 				271677BA1C6CBDFA0080B0A2 /* CACFNumber.cpp in Sources */,
 				27D1D6BB1DD7226C0049E707 /* BGMAboutPanel.m in Sources */,
@@ -1469,7 +1487,13 @@
 				INFOPLIST_FILE = BGMApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bearisdriving.BGM.App;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = MacMixer;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				SWIFT_VERSION = 5.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "BGMApp/MacMixer/MacMixer-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				STRIP_STYLE = "non-global";
 				WARNING_CFLAGS = (
 					"-Wpartial-availability",
@@ -1660,7 +1684,13 @@
 				INFOPLIST_FILE = BGMApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bearisdriving.BGM.App;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = MacMixer;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				SWIFT_VERSION = 5.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "BGMApp/MacMixer/MacMixer-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				STRIP_STYLE = "non-global";
 				WARNING_CFLAGS = (
 					"-Wpartial-availability",
@@ -1695,7 +1725,13 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LLVM_LTO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bearisdriving.BGM.App;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = MacMixer;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				SWIFT_VERSION = 5.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "BGMApp/MacMixer/MacMixer-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				STRIP_STYLE = "non-global";
 				WARNING_CFLAGS = (
 					"-Wno-profile-instr-out-of-date",

@@ -311,6 +311,44 @@
     playThrough_UISounds.Activate();
 }
 
+- (void) resyncSampleRate {
+    @try {
+        [stateLock lock];
+
+        if (outputDevice.GetObjectID() == kAudioObjectUnknown) {
+            return;
+        }
+
+        try {
+            // Only act when the output device's rate actually differs from
+            // BGMDevice's current rate. Bluetooth devices emit sample-rate
+            // notifications while settling after selection even when the rate
+            // doesn't change; re-activating playthrough on those would briefly
+            // tear down audio (and could stop it), so skip the no-op case.
+            Float64 outRate = outputDevice.GetNominalSampleRate();
+            Float64 bgmRate = bgmDevice->GetNominalSampleRate();
+            if (outRate <= 0.0 || outRate == bgmRate) {
+                return;
+            }
+
+            // Re-activate playthrough on the current output device. Activate()
+            // sets BGMDevice's sample rate to match the output device's new rate
+            // (see BGMPlayThrough::Activate), recovering from the output device
+            // changing rate underneath us (e.g. AirPods entering call mode).
+            // Note: no StopIfIdle here — that schedules a delayed stop that can
+            // kill audio that's actually playing. BGM's own idle listeners still
+            // handle power-saving when playback really stops.
+            [self setOutputDeviceForPlaythroughAndControlSync:outputDevice];
+            playThrough.Start();
+            playThrough_UISounds.Start();
+        } catch (...) {
+            // Best effort — nothing useful to do if re-sync fails.
+        }
+    } @finally {
+        [stateLock unlock];
+    }
+}
+
 - (void) setDataSource:(UInt32)dataSourceID device:(BGMAudioDevice&)device {
     BGMLogAndSwallowExceptions("BGMAudioDeviceManager::setDataSource", ([&] {
         AudioObjectPropertyScope scope = kAudioObjectPropertyScopeOutput;

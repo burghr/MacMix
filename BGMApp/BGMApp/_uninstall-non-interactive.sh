@@ -38,7 +38,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin; export PATH
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-app_path="/Applications/Background Music.app"
+app_path="/Applications/MacMixer.app"
 driver_path="/Library/Audio/Plug-Ins/HAL/Background Music Device.driver"
 xpc_path1="/usr/local/libexec/BGMXPCHelper.xpc"
 xpc_path2="/Library/Application Support/Background Music/BGMXPCHelper.xpc"
@@ -49,7 +49,7 @@ max_size_mb_for_rm=30
 
 file_paths=("${app_path}" "${driver_path}" "${xpc_path1}" "${xpc_path2}")
 
-bgmapp_process_name="Background Music"
+bgmapp_process_name="MacMixer"
 
 launchd_plist_label="com.bearisdriving.BGM.XPCHelper"
 launchd_plist="/Library/LaunchDaemons/${launchd_plist_label}.plist"

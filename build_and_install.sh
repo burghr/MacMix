@@ -122,7 +122,7 @@ COREAUDIOD_PLIST="/System/Library/LaunchDaemons/com.apple.audio.coreaudiod.plist
 # TODO: Should (can?) we use xcodebuild to get these from the Xcode project rather than duplicating
 #       them?
 APP_PATH="/Applications"
-APP_DIR="Background Music.app"
+APP_DIR="MacMixer.app"
 DRIVER_PATH="/Library/Audio/Plug-Ins/HAL"
 DRIVER_DIR="Background Music Device.driver"
 # XPC_HELPER_OUTPUT_PATH is set below because it depends on the system (when installing).
@@ -133,7 +133,7 @@ ARCHIVES_DIR="archives"
 
 GENERAL_ERROR_MSG="Internal script error. Probably a bug in this script."
 BUILD_FAILED_ERROR_MSG="A build command failed. Probably a compilation error."
-BGMAPP_FAILED_TO_START_ERROR_MSG="Background Music (${APP_PATH}/${APP_DIR}) didn't seem to start \
+BGMAPP_FAILED_TO_START_ERROR_MSG="MacMixer (${APP_PATH}/${APP_DIR}) didn't seem to start \
 up. It might just be taking a while.
 
 If it didn't install correctly, you'll need to open the Sound control panel in System Settings \
@@ -842,7 +842,7 @@ if [[ "${XCODEBUILD_ACTION}" == "install" ]]; then
 
     # Open BGMApp. We have to change the default audio device after restarting coreaudiod and this
     # is the easiest way.
-    echo "Launching Background Music."
+    echo "Launching MacMixer."
 
     ERROR_MSG="${BGMAPP_FAILED_TO_START_ERROR_MSG}"
     open "${APP_PATH}/${APP_DIR}"
@@ -852,7 +852,7 @@ if [[ "${XCODEBUILD_ACTION}" == "install" ]]; then
 
     # Wait up to 5 seconds for Background Music to start.
     (trap 'exit 1' TERM
-        while ! (ps -Ao ucomm= | grep 'Background Music' > /dev/null); do
+        while ! (ps -Ao ucomm= | grep 'MacMixer' > /dev/null); do
             sleep 1
         done) &
     show_spinner "${BGMAPP_FAILED_TO_START_ERROR_MSG}" 5

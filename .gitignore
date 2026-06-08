@@ -37,3 +37,7 @@ xcuserdata
 ## Obj-C/Swift specific
 *.hmap
 *.ipa
+
+# MacMixer local build output
+.build/
+.build-rel/

@@ -101,6 +101,12 @@ static const int kBGMErrorCode_ReturningEarly       = 2;
 // code received from the HAL.
 - (OSStatus) startPlayThroughSync:(BOOL)forUISoundsDevice;
 
+// Re-activate playthrough on the current output device so BGMDevice's sample
+// rate is re-synced to the output device's current rate. Call when the output
+// device changes its nominal sample rate underneath us (e.g. a Bluetooth
+// headset entering call mode), which otherwise causes pitch/speed distortion.
+- (void) resyncSampleRate;
+
 // When the output device is changed, BGMAudioDeviceManager will send the ID of the new output
 // device to BGMXPCHelper through this connection.
 - (void) setBGMXPCHelperConnection:(NSXPCConnection* __nullable)connection;
