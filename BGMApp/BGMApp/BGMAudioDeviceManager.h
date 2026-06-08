@@ -37,10 +37,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreAudio/AudioHardwareBase.h>
 
-// Forward Declarations
-@class BGMOutputVolumeMenuItem;
-@class BGMOutputDeviceMenuSection;
-
 
 #pragma clang assume_nonnull begin
 
@@ -51,12 +47,6 @@ static const int kBGMErrorCode_ReturningEarly       = 2;
 
 // Returns nil if BGMDevice isn't installed.
 - (instancetype) init;
-
-// Set the BGMOutputVolumeMenuItem to be notified when the output device is changed.
-- (void) setOutputVolumeMenuItem:(BGMOutputVolumeMenuItem*)item;
-
-// Set the BGMOutputDeviceMenuSection to be notified when the output device is changed.
-- (void) setOutputDeviceMenuSection:(BGMOutputDeviceMenuSection*)menuSection;
 
 // Set BGMDevice as the default audio device for all processes
 - (NSError* __nullable) setBGMDeviceAsOSDefault;
