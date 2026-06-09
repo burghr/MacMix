@@ -41,3 +41,6 @@ xcuserdata
 # MacMixer local build output
 .build/
 .build-rel/
+
+# Profiling output
+*.profraw
