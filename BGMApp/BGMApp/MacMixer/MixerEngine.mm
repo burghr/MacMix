@@ -69,6 +69,19 @@ static const int kMixerNeutralRawVolume =
     // 24 kHz call-mode rate while BGMDevice stays at 48 kHz).
     AudioObjectID _rateListenerDevice;
     AudioObjectPropertyListenerBlock _rateBlock;
+
+    // Watches for audio devices being added/removed so we can follow a newly
+    // connected device (e.g. AirPods) as the output.
+    NSMutableSet<NSNumber *> *_knownOutputIDs;
+    AudioObjectPropertyListenerBlock _deviceListBlock;
+}
+
+static AudioObjectPropertyAddress DeviceListAddress(void) {
+    return (AudioObjectPropertyAddress){
+        kAudioHardwarePropertyDevices,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMain
+    };
 }
 
 static AudioObjectPropertyAddress NominalSampleRateAddress(void) {
@@ -162,6 +175,7 @@ static AudioObjectPropertyAddress NominalSampleRateAddress(void) {
     }];
 
     [self installRateListenerForDevice:[self currentOutputDeviceID]];
+    [self installDeviceListListener];
 
     _running = YES;
     return YES;
@@ -170,9 +184,91 @@ static AudioObjectPropertyAddress NominalSampleRateAddress(void) {
 - (void)stop {
     if (!_running || !_manager) { return; }
     [self removeRateListener];
+    [self removeDeviceListListener];
     [_manager unsetBGMDeviceAsOSDefault];
     _xpcListener = nil;
     _running = NO;
+}
+
+// ── Follow newly-connected output devices ───────────────────────────────────
+
+// A monitor's audio output (HDMI / DisplayPort) — excluded from auto-follow.
+- (BOOL)isDisplayDevice:(AudioObjectID)deviceID {
+    try {
+        CAHALAudioDevice dev(deviceID);
+        UInt32 t = dev.GetTransportType();
+        return t == kAudioDeviceTransportTypeHDMI || t == kAudioDeviceTransportTypeDisplayPort;
+    } catch (...) {
+        return NO;
+    }
+}
+
+- (NSMutableSet<NSNumber *> *)currentOutputIDSet {
+    NSMutableSet<NSNumber *> *s = [NSMutableSet set];
+    for (MixerOutputDevice *d in [self availableOutputDevices]) {
+        [s addObject:@(d.deviceID)];
+    }
+    return s;
+}
+
+- (void)installDeviceListListener {
+    _knownOutputIDs = [self currentOutputIDSet];
+
+    __weak MixerEngine *weakSelf = self;
+    _deviceListBlock = ^(UInt32 inNumberAddresses, const AudioObjectPropertyAddress *inAddresses) {
+        #pragma unused(inNumberAddresses, inAddresses)
+        MixerEngine *strongSelf = weakSelf;
+        if (strongSelf && strongSelf->_running) {
+            [strongSelf handleDeviceListChanged];
+        }
+    };
+
+    AudioObjectPropertyAddress addr = DeviceListAddress();
+    AudioObjectAddPropertyListenerBlock(kAudioObjectSystemObject, &addr,
+                                        dispatch_get_main_queue(), _deviceListBlock);
+}
+
+- (void)removeDeviceListListener {
+    if (_deviceListBlock) {
+        AudioObjectPropertyAddress addr = DeviceListAddress();
+        AudioObjectRemovePropertyListenerBlock(kAudioObjectSystemObject, &addr,
+                                               dispatch_get_main_queue(), _deviceListBlock);
+        _deviceListBlock = nil;
+    }
+    _knownOutputIDs = nil;
+}
+
+- (void)handleDeviceListChanged {
+    if (!_manager) { return; }
+
+    NSMutableSet<NSNumber *> *current = [self currentOutputIDSet];
+    NSMutableSet<NSNumber *> *added = [current mutableCopy];
+    [added minusSet:(_knownOutputIDs ?: [NSSet set])];
+
+    BOOL currentStillPresent = [current containsObject:@([self currentOutputDeviceID])];
+
+    if (added.count > 0) {
+        // A device was just connected — follow it (e.g. switch to AirPods when
+        // they connect), but ignore displays (HDMI/DisplayPort monitors), which
+        // usually aren't where you want audio. Then re-assert BGMDevice as the
+        // system default in case macOS moved the default to the new device, so
+        // app audio keeps routing through the mixer.
+        AudioObjectID newDevice = kAudioObjectUnknown;
+        for (NSNumber *n in added) {
+            AudioObjectID d = (AudioObjectID)n.unsignedIntValue;
+            if (![self isDisplayDevice:d]) { newDevice = d; break; }
+        }
+        if (newDevice != kAudioObjectUnknown && [self setOutputDeviceID:newDevice]) {
+            [_manager setBGMDeviceAsOSDefault];
+        }
+    } else if (!currentStillPresent) {
+        // Our output device was unplugged — fall back to any remaining device
+        // so audio keeps playing.
+        MixerOutputDevice *fallback = [self availableOutputDevices].firstObject;
+        if (fallback) { [self setOutputDeviceID:fallback.deviceID]; }
+    }
+
+    _knownOutputIDs = current;
 }
 
 // ── Output-device sample-rate listener ──────────────────────────────────────
