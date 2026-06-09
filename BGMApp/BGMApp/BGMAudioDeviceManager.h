@@ -12,6 +12,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Background Music. If not, see <http://www.gnu.org/licenses/>.
+//
+// Modified 2026 by burghr for MacMixer.
 
 //
 //  BGMAudioDeviceManager.h
