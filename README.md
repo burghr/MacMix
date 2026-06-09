@@ -1,5 +1,19 @@
 # MacMixer
 
+> ## ⚠️ Deprecated — moved to a new repository
+>
+> **This version is no longer maintained.** MacMixer has been **rewritten from
+> scratch** as a standalone app built on the macOS 14.2 Core Audio process-tap
+> API — so it needs **no virtual audio driver**, **no `sudo` install**, and
+> shows **no microphone indicator** (the main drawbacks of this driver-based
+> fork).
+>
+> ### 👉 New repo: **https://github.com/burghr/MacMixer**
+>
+> Please use that instead. This repository is kept only for history.
+
+---
+
 A menu bar **volume mixer** for macOS: a master volume slider, an output-device
 picker, and a per-app volume slider for every running app — in a clean,
 native SwiftUI popover.
